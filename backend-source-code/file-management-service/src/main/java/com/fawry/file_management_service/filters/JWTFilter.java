@@ -1,5 +1,6 @@
 package com.fawry.file_management_service.filters;
 
+import com.fawry.file_management_service.exceptions.UnAuthorizedException;
 import com.fawry.file_management_service.utils.JWTUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -42,18 +43,21 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = getToken(request);
 
         if (token == null) {
-            response.setStatus(401);
-            return;
+            throw new UnAuthorizedException("Token is not provided");
         }
 
         Jws<Claims> claims = jwtUtil.verifyToken(token);
 
         if(!claims.getBody().get("type").equals("ACCESS")) {
-            response.setStatus(401);
-            return;
+            throw new UnAuthorizedException("Invalid token type");
         }
 
         request.setAttribute("id", claims.getBody().getSubject());

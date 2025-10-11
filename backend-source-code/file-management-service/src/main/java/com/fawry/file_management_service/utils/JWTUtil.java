@@ -1,5 +1,6 @@
 package com.fawry.file_management_service.utils;
 
+import com.fawry.file_management_service.exceptions.UnAuthorizedException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
@@ -45,11 +46,11 @@ public class JWTUtil {
                     .build()
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Token expired", e);
+            throw new UnAuthorizedException("Token is expired");
         } catch (SignatureException e) {
-            throw new RuntimeException("Invalid signature", e);
+            throw new UnAuthorizedException("Invalid Token");
         } catch (JwtException e) {
-            throw new RuntimeException("Invalid token", e);
+            throw new UnAuthorizedException(e.getMessage());
         }
     }
 }
