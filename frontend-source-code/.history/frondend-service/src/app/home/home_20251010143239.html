@@ -1,0 +1,75 @@
+<div class="home-container">
+  <!-- Header with Sign Out -->
+  <div class="home-header">
+    <div class="user-info" *ngIf="user">
+      <img [src]="user.logoPath ? user.logoPath : 'assets/default-avatar.png'" alt="Profile avatar">
+      <div class="user-name">{{ user.firstName }} {{ user.middleName }} {{ user.lastName }}</div>
+    </div>
+    <button class="signout-btn" (click)="signOut()">Sign Out</button>
+  </div>
+
+  <!-- Create Post -->
+  <div class="create-post-container">
+    <button class="create-post-btn" (click)="toggleCreatePost()">Create Post</button>
+    
+    <!-- Popup Modal -->
+    <div class="create-post-modal" *ngIf="showCreatePost">
+      <textarea [(ngModel)]="newPostContent" placeholder="What's on your mind?"></textarea>
+      <input type="file" (change)="onFileSelected($event)" multiple>
+      <div class="create-post-actions">
+        <button (click)="submitPost()">Post</button>
+        <button (click)="toggleCreatePost()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Posts Feed -->
+    <div class="posts-feed" (scroll)="onPostsScroll($event)">
+      <div class="post-card" *ngFor="let post of postsPage.content">
+        <div class="post-header">
+          <img [src]="post.user.logoPath ? post.user.logoPath : 'assets/default-avatar.png'" class="post-user-avatar" alt="User">
+          <div>
+            <div class="post-user-name">{{ post.user.firstName }} {{ post.user.middleName }} {{ post.user.lastName }}</div>
+            <div class="post-meta">{{ post.id }}</div>
+          </div>
+        </div>
+        <div class="post-content">{{ post.content }}</div>
+
+        <!-- Post Images/Videos -->
+        <!-- <div class="post-media" *ngIf="post.mediaUrls?.length">
+          <ng-container *ngFor="let url of post.mediaUrls">
+            <img *ngIf="isImage(url)" [src]="url" class="post-media-item">
+            <video *ngIf="!isImage(url)" controls class="post-media-item">
+              <source [src]="url" type="video/mp4">
+            </video>
+          </ng-container>
+        </div> -->
+
+        <div class="post-stats">
+          <span>Likes: {{ post.likeCount }}</span>
+          <span>Dislikes: {{ post.disLikeCount }}</span>
+          <span>Comments: {{ post.commentsCount }}</span>
+        </div>
+      </div>
+      <div *ngIf="loadingPosts" class="loading">Loading more posts...</div>
+      <div *ngIf="!loadingPosts && postsPage.page + 1 >= postsPage.totalPages" class="loading">All posts loaded</div>
+    </div>
+
+    <!-- Suggestions Sidebar -->
+    <div class="suggestions-sidebar">
+      <h3>People you may know</h3>
+      <div class="suggestion-card" *ngFor="let suggestion of suggestionsPage.content">
+        <img [src]="suggestion.logoPath ? suggestion.logoPath : 'assets/default-avatar.png'" class="suggestion-avatar" alt="Suggestion">
+        <div class="suggestion-info">
+          <div class="suggestion-name">{{ suggestion.firstName }} {{ suggestion.middleName }} {{ suggestion.lastName }}</div>
+          <div class="suggestion-email">{{ suggestion.email }}</div>
+        </div>
+        <div class="suggestion-actions">
+          <button (click)="follow(suggestion)">Follow</button>
+          <button (click)="cancel(suggestion)">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

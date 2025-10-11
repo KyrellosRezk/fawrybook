@@ -1,0 +1,49 @@
+<form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label>Username</label>
+    <input formControlName="username" type="text">
+  </div>
+
+  <div>
+    <label>FirstName</label>
+    <input formControlName="firstname" type="text">
+  </div>
+
+  <div>
+    <label>MiddleName</label>
+    <input formControlName="middlename" type="text">
+  </div>
+
+  <div>
+    <label>Username</label>
+    <input formControlName="username" type="text">
+  </div>
+
+  <div>
+    <label>Email</label>
+    <input formControlName="email" type="email">
+  </div>
+
+  <div>
+    <label>Password</label>
+    <input formControlName="password" type="password">
+  </div>
+
+  <div>
+    <label>Governorate</label>
+    <select formControlName="governorateId">
+      <option value="" disabled selected>Select Governorate</option>
+      <option *ngFor="let g of governorates" [value]="g.id">{{ g.name }}</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Position</label>
+    <select formControlName="positionId">
+      <option value="" disabled selected>Select Position</option>
+      <option *ngFor="let p of positions" [value]="p.id">{{ p.name }}</option>
+    </select>
+  </div>
+
+  <button type="submit">Sign Up</button>
+</form>

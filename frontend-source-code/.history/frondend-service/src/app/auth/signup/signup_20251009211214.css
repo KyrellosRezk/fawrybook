@@ -1,0 +1,77 @@
+/* ===== Global Container ===== */
+form {
+    max-width: 450px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* ===== Headings ===== */
+form h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* ===== Input Groups ===== */
+div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+/* ===== Labels ===== */
+label {
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+}
+
+/* ===== Inputs & Selects ===== */
+input,
+select {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Focus effect */
+input:focus,
+select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.4);
+    outline: none;
+}
+
+/* ===== Submit Button ===== */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.25s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* ===== Small screens ===== */
+@media (max-width: 600px) {
+    form {
+        padding: 20px;
+        margin: 30px 15px;
+    }
+}

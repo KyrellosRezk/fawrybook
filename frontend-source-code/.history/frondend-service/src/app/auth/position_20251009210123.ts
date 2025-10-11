@@ -1,0 +1,14 @@
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class Position {
+   private baseUrl = 'http://localhost:8080/user-management/api/v1/governorate';
+
+  constructor(private http: HttpClient) {}
+
+  getAll(): Observable<ObjectResponse[]> {
+    return this.http.get<ObjectResponse[]>(`${this.baseUrl}`);
+  }
+}

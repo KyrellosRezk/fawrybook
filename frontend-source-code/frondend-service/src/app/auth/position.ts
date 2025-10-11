@@ -1,0 +1,17 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { ObjectResponse } from './payloads/responses/object.response';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class Position {
+  private baseUrl = 'http://localhost:8080/user-management/api/v1/position';
+
+  constructor(private http: HttpClient) {}
+
+  getAll(): Observable<ObjectResponse[]> {
+    return this.http.get<ObjectResponse[]>(`${this.baseUrl}`);
+  }
+}

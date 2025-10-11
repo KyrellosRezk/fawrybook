@@ -1,0 +1,33 @@
+<div class="signin-container">
+  <form [formGroup]="signinForm" (ngSubmit)="onSubmit()" class="signin-form">
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Sign in to continue to FawryBook</p>
+
+    <div class="form-group">
+      <label for="identifier">Email or Username or Phone number</label>
+      <input
+        id="identifier"
+        formControlName="identifier"
+        type="text"
+        placeholder="Enter your email or username"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        id="password"
+        formControlName="password"
+        type="password"
+        placeholder="Enter your password"
+      />
+    </div>
+
+    <button type="submit" class="signin-btn">Sign In</button>
+
+    <p class="signup-text">
+      New to FawryBook?
+      <span class="join-now" (click)="goToSignup()">Join now</span>
+    </p>
+  </form>
+</div>
