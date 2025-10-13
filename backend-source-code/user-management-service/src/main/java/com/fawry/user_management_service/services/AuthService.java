@@ -41,7 +41,11 @@ public class AuthService {
                     new UserCredentialEntity(userEntity, hashedPassword)
             );
             this.userCredentialRepository.save(userCredentialEntity);
-            return sendOtp(userEntity.getEmail(), userEntity.getUsername());
+            return sendOtp(
+                    userEntity.getId(),
+                    userEntity.getUsername(),
+                    userEntity.getEmail()
+            );
         } catch (Exception e) {
             RedisUtils.deleteJsonValue("user", userEntity.getId());
             throw new BadRequestException(e.getMessage());
@@ -60,7 +64,7 @@ public class AuthService {
         if (!userEntity.getStatus().equals(UserStatusEnum.UNVERIFIED)) {
             throw new BadRequestException("User with email: " + email + " already verified");
         }
-        sendOtp(userEntity.getEmail(), userEntity.getUsername());
+        sendOtp(userEntity.getId(), userEntity.getUsername(), userEntity.getEmail());
     }
 
     public SignInResponse signIn(@NotNull SignInRequest signInRequest) throws Exception {
@@ -76,7 +80,7 @@ public class AuthService {
 
     public SignInResponse signInWithToken(@NotNull String userId) {
         UserEntity userEntity = this.userService.getById(userId);
-        String newAccessToken = jwtUtil.generateAccessToken(userId, userEntity.getUsername());
+        String newAccessToken = jwtUtil.generateAccessToken(userId, userEntity.getUsername(), userEntity.getEmail());
         UserBasicDataResponse user = new UserBasicDataResponse(
             userEntity.getId(),
             userEntity.getEmail(),
@@ -99,7 +103,7 @@ public class AuthService {
             || !userEntity.getUserCredential().getRefreshToken().equals(refreshToken)) {
             throw new UnAuthorizedException("Invalid refresh token");
         }
-        String newAccessToken = jwtUtil.generateAccessToken(userId, userEntity.getUsername());
+        String newAccessToken = jwtUtil.generateAccessToken(userId, userEntity.getUsername(), userEntity.getEmail());
         return new SignInResponse(
                 newAccessToken,
                 null,
@@ -129,24 +133,36 @@ public class AuthService {
                 return this.generateActiveUserTokens(userEntity);
             }
             case UNVERIFIED -> {
-                return this.generateUnvrifiedUserTokens(userEntity.getEmail(), userEntity.getUsername());
+                return this.generateUnvrifiedUserTokens(
+                        userEntity.getId(),
+                        userEntity.getUsername(),
+                        userEntity.getEmail()
+                );
             }
             default -> throw new BadRequestException("User is deleted");
         }
     }
 
-    private SignInResponse generateUnvrifiedUserTokens(String email, String username) {
+    private SignInResponse generateUnvrifiedUserTokens(String userId, String username, String email) {
         return new SignInResponse(
                 null,
                 null,
-                jwtUtil.generateOTPToken(email, username),
+                jwtUtil.generateOTPToken(userId, username, email),
                 null
         );
     }
 
     private SignInResponse generateActiveUserTokens(@NotNull UserEntity userEntity) {
-        String accessToken = jwtUtil.generateAccessToken(userEntity.getId(), userEntity.getUsername());
-        String refreshToken = jwtUtil.generateRefreshToken(userEntity.getId(), userEntity.getUsername());
+        String accessToken = jwtUtil.generateAccessToken(
+                userEntity.getId(),
+                userEntity.getUsername(),
+                userEntity.getEmail()
+        );
+        String refreshToken = jwtUtil.generateRefreshToken(
+                userEntity.getId(),
+                userEntity.getUsername(),
+                userEntity.getEmail()
+        );
         UserCredentialEntity userCredentialEntity = userEntity.getUserCredential();
         userCredentialEntity.setRefreshToken(refreshToken);
         userCredentialEntity.setUpdatedAt(Instant.now());
@@ -167,9 +183,9 @@ public class AuthService {
         );
     }
 
-    private OTPResponse sendOtp(String email, String username){
+    private OTPResponse sendOtp(String userId, String username, String email){
         String otp = OTPUtil.generateOtp(email);
-        String OTPToken = jwtUtil.generateOTPToken(email, username);
+        String OTPToken = jwtUtil.generateOTPToken(userId, username, email);
         EmailUtil.sendOtpEmail(email, otp);
         return new OTPResponse(OTPToken);
     }

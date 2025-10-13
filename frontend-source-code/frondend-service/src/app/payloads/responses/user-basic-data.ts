@@ -4,5 +4,6 @@ export interface UserBasicData {
     firstName: string,
     middleName: string,
     lastName: string,
-    logoPath: string
+    logoPath: string,
+    logoFile: Blob
 }

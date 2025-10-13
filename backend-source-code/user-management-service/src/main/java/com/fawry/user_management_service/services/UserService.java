@@ -2,7 +2,6 @@ package com.fawry.user_management_service.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fawry.user_management_service.enums.RequestActionEnum;
 import com.fawry.user_management_service.enums.RequestReplyActionEnum;
 import com.fawry.user_management_service.enums.UserStatusEnum;
 import com.fawry.user_management_service.exceptions.BadRequestException;
@@ -19,8 +18,6 @@ import com.fawry.user_management_service.payloads.responses.UserProfile;
 import com.fawry.user_management_service.repositories.UserRepository;
 import com.fawry.user_management_service.utils.RabbitPublisher;
 import com.fawry.user_management_service.utils.RedisUtils;
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -171,7 +169,7 @@ public class UserService {
         return this.userRepository.findRequests(id, pageable);
     }
 
-    @Transactional(rollbackOn =  Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void takeActionOnRequest(@NotNull RequestActionRequest requestActionRequest, String id) {
         if(!this.userRepository.existsFollowRequest(id, requestActionRequest.senderId())) {
             throw new BadRequestException("There is no request from user id: " + requestActionRequest.senderId());
@@ -199,7 +197,8 @@ public class UserService {
         }
     }
 
-    private void createRequest(String senderId, String receiverId) {
+    @Transactional
+    protected void createRequest(String senderId, String receiverId) {
         Boolean isRequestExist = this.userRepository.existsFollowRequest(receiverId, senderId);
         if (isRequestExist) {
             throw new BadRequestException("You already sent follow request for user with id: " + receiverId);
@@ -207,7 +206,8 @@ public class UserService {
         this.userRepository.insertFollowRequest(senderId, receiverId);
     }
 
-    private void revokeRequest(String senderId, String receiverId) {
+    @Transactional
+    protected void revokeRequest(String senderId, String receiverId) {
         Boolean isRequestExist = this.userRepository.existsFollowRequest(receiverId, senderId);
         if (!isRequestExist) {
             throw new BadRequestException("You did not send follow request for user with id: " + receiverId);

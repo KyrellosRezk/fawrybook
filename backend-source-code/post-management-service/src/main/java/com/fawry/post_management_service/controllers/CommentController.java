@@ -2,12 +2,15 @@ package com.fawry.post_management_service.controllers;
 
 import com.fawry.post_management_service.payloads.requests.CreateCommentRequest;
 import com.fawry.post_management_service.payloads.requests.UpdateMediaEntityRequest;
+import com.fawry.post_management_service.payloads.responses.CommentResponse;
 import com.fawry.post_management_service.payloads.responses.CreateMediaEntityResponse;
 import com.fawry.post_management_service.services.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j(topic = "CommentController")
@@ -24,6 +27,13 @@ public class CommentController {
     ) {
         String userId = (String) request.getAttribute("id");
         return this.commentService.create(createCommentRequest, userId);
+    }
+
+    @GetMapping("{postId}")
+    public List<CommentResponse> getComments(
+        @PathVariable("postId") String postId
+    ) {
+        return this.commentService.getComments(postId);
     }
 
     @PostMapping("update")

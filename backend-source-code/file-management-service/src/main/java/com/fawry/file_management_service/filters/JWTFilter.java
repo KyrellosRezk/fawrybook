@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JWTFilter extends OncePerRequestFilter {
@@ -25,8 +27,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
 
+    private final ArrayList<String> OTPTokenList;
+
     public JWTFilter(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
+
+        this.OTPTokenList = new ArrayList<>(List.of(
+                "v1/file/profile"
+        ));
     }
 
     @Override
@@ -56,12 +64,17 @@ public class JWTFilter extends OncePerRequestFilter {
 
         Jws<Claims> claims = jwtUtil.verifyToken(token);
 
-        if(!claims.getBody().get("type").equals("ACCESS")) {
-            throw new UnAuthorizedException("Invalid token type");
+        if(OTPTokenList.contains(path)){
+            if(!claims.getBody().get("type").equals("OTP")) {
+                throw new UnAuthorizedException("Invalid token type");
+            }
+        } else {
+            if(!claims.getBody().get("type").equals("ACCESS")) {
+                throw new UnAuthorizedException("Invalid token type");
+            }
         }
 
         request.setAttribute("id", claims.getBody().getSubject());
-        request.setAttribute("username", claims.getBody().get("username"));
 
         filterChain.doFilter(request, response);
     }

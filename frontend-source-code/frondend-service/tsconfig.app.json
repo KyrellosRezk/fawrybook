@@ -10,7 +10,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/app/payloads/responses/otp-response.ts"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

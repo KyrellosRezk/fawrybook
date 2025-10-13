@@ -1,5 +1,5 @@
 export interface PaginationRequest {
     page: number,
     size: number,
-    filterUserId?: string
+    filterUserId?: string | null;
 }

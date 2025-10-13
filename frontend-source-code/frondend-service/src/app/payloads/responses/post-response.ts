@@ -1,4 +1,4 @@
-import { UserBasicData } from "../../../auth/payloads/responses/user-basic-data";
+import { UserBasicData } from "./user-basic-data";
 
 export interface PostResponse {
     id: string,
@@ -7,5 +7,9 @@ export interface PostResponse {
     commentsCount: number,
     likeCount: number,
     disLikeCount: number,
-    hasMedia: boolean
+    hasMedia: boolean,
+    mediaPaths: string[],
+    expanded?: boolean,
+    liked: boolean,
+    disliked: boolean
 }

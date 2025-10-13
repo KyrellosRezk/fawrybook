@@ -23,13 +23,22 @@ public class FileController {
 
     @PostMapping(consumes = {"multipart/form-data"})
     public UploadFilesResponse uploadFiles(
-            @RequestParam("files") Map<String, MultipartFile> files,
-            @RequestParam("entity name") EntityNameEnum entityName,
-            @RequestParam("entity id") String entityId,
+            @RequestParam Map<String, MultipartFile> files,
+            @RequestParam("entity_name") EntityNameEnum entityName,
+            @RequestParam("entity_id") String entityId,
             HttpServletRequest request
     ) {
         String userId = (String) request.getAttribute("id");
         return this.fileService.save(files, entityName, entityId, userId);
+    }
+
+    @PostMapping(path = "profile", consumes = {"multipart/form-data"})
+    public String uploadFiles(
+            @RequestParam MultipartFile file,
+            HttpServletRequest request
+    ) throws Exception {
+        String userId = (String) request.getAttribute("id");
+        return this.fileService.save(file, userId);
     }
 
     @DeleteMapping
@@ -45,4 +54,9 @@ public class FileController {
     public Resource getFile(
             @RequestParam("path") String relativePath
     ) { return this.fileService.getFile(relativePath); }
+
+    @GetMapping("files")
+    public List<String> getPathsInFolder(
+            @RequestParam("path") String relativePath
+    ) throws Exception { return this.fileService.getPaths(relativePath); }
 }

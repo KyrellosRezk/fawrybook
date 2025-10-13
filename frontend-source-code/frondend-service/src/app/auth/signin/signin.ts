@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SignInRequest } from '../payloads/requests/signin-request';
-import { SignInResponse } from '../payloads/responses/sign-in-response';
+import { SignInRequest } from '../../payloads/requests/signin-request';
+import { SignInResponse } from '../../payloads/responses/sign-in-response';
 import { Auth } from '../auth';
 import { Router } from '@angular/router';
 

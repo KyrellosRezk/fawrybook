@@ -1,5 +1,6 @@
 package com.fawry.file_management_service.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fawry.file_management_service.enums.EntityNameEnum;
 import com.fawry.file_management_service.exceptions.BadRequestException;
 import com.fawry.file_management_service.payloads.responses.UploadFilesResponse;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j(topic = "FileService")
@@ -25,7 +27,9 @@ public class FileService {
     @Value("${storage.path}")
     private String storagePath;
 
-    private final List<String> ALLOWED_EXTENSION = List.of("jpg", "png", "webp", "jpeg", "mp4");
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final List<String> ALLOWED_EXTENSION = List.of(".jpg", ".png", ".webp", ".jpeg", ".mp4");
 
     public UploadFilesResponse save(
             @NotNull Map<String,
@@ -53,6 +57,45 @@ public class FileService {
         return new UploadFilesResponse(uploadedPaths.size(), uploadedPaths);
     }
 
+    public String save(
+            @NotNull MultipartFile file,
+            String userId
+    ) throws Exception {
+        if (file.isEmpty()) {
+            throw new BadRequestException("No file uploaded");
+        }
+        return this.saveFile(file, userId);
+    }
+
+    private @NotNull String saveFile(
+            @NotNull MultipartFile file,
+            String userId
+    ) throws Exception {
+        if (file.isEmpty()) {
+            throw new BadRequestException("Empty file cannot be saved");
+        }
+
+        Path entityDir;
+
+        entityDir = Paths.get(storagePath, userId ,EntityNameEnum.PROFILE.toString());
+
+        Files.createDirectories(entityDir);
+
+        String originalName = file.getOriginalFilename();
+        if(originalName == null || !originalName.contains(".")) {
+            throw new BadRequestException("The file has no extension");
+        }
+        String fileExtension = originalName.substring(originalName.lastIndexOf('.'));
+        if(!ALLOWED_EXTENSION.contains(fileExtension)) {
+            throw new BadRequestException("The file extension: " + fileExtension + " is not allowed");
+        }
+        Path targetPath = entityDir.resolve("profile" + fileExtension);
+        file.transferTo(targetPath.toFile());
+
+        Path relativePath = Paths.get(storagePath).relativize(targetPath);
+        return relativePath.toString().replace("\\", "/");
+    }
+
     private @NotNull String saveFile(
             @NotNull MultipartFile file,
             EntityNameEnum entityName,
@@ -64,7 +107,10 @@ public class FileService {
             throw new BadRequestException("Empty file cannot be saved");
         }
 
-        Path entityDir = Paths.get(storagePath, userId ,entityName.toString(), entityId);
+        Path entityDir;
+
+        entityDir = Paths.get(storagePath, userId ,entityName.toString());
+
         Files.createDirectories(entityDir);
 
         String originalName = file.getOriginalFilename();
@@ -121,7 +167,7 @@ public class FileService {
 
     public Resource getFile(String relativePath) {
         try {
-            Path fullPath = Paths.get(storagePath, relativePath).normalize();
+            Path fullPath = Paths.get(relativePath).normalize();
             if (!fullPath.startsWith(Paths.get(storagePath))) {
                 throw new BadRequestException("Invalid file path: " + relativePath);
             }
@@ -133,5 +179,15 @@ public class FileService {
             log.error("Failed to load file [{}]: {}", relativePath, e.getMessage());
             throw new BadRequestException("Unable to load file: " + relativePath);
         }
+    }
+
+    public List<String> getPaths(String relativePath) throws Exception {
+        Path directory = Paths.get(storagePath, relativePath).normalize().toAbsolutePath();
+        if (!Files.exists(directory) || !Files.isDirectory(directory)) {
+            throw new BadRequestException("Path does not exist or is not a directory: " + directory);
+        }
+        return Files.list(directory)
+                .map(Path::toString)
+                .collect(Collectors.toList());
     }
 }

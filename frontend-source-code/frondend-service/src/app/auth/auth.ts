@@ -2,12 +2,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { SignUpRequest } from './payloads/requests/signup-request';
-import { OTPResponse } from './payloads/responses/otp.response';
-import { VerifyOtpRequest } from './payloads/requests/verify-otp-request';
-import { SignInResponse } from './payloads/responses/sign-in-response';
-import { SignInRequest } from './payloads/requests/signin-request';
+import { SignUpRequest } from '../payloads/requests/signup-request';
+import { VerifyOtpRequest } from '../payloads/requests/verify-otp-request';
+import { SignInResponse } from '../payloads/responses/sign-in-response';
+import { SignInRequest } from '../payloads/requests/signin-request';
 import { response } from 'express';
+import { OTPResponse } from '../payloads/responses/otp-response';
 
 @Injectable({
   providedIn: 'root'
@@ -28,19 +28,14 @@ export class Auth {
     );
   }
 
-  verifyOtp(payload: VerifyOtpRequest): Observable<SignInResponse> {
+  verifyOtp(payload: VerifyOtpRequest): Observable<void> {
     const otpToken = localStorage.getItem('otpToken');
     if (!otpToken) throw new Error('OTP token missing');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${otpToken}`);
 
-    return this.http.post<SignInResponse>(`${this.baseUrl}/verify`, payload,{ headers }).pipe(
-      tap((response: SignInResponse) => {
+    return this.http.post<void>(`${this.baseUrl}/verify`, payload,{ headers }).pipe(
+      tap(() => {
         localStorage.removeItem('otpToken');
-        if (response.accessToken && response.refreshToken && response.user) {
-          localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('refreshToken', response.refreshToken);
-          localStorage.setItem('user', JSON.stringify(response.user));
-        }
       })
     )
   }

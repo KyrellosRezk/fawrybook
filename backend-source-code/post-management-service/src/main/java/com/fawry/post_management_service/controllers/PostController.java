@@ -32,14 +32,14 @@ public class PostController {
     @PostMapping("update")
     public CreateMediaEntityResponse updatePost(
             HttpServletRequest request,
-            UpdateMediaEntityRequest updateMediaEntityRequest
+            @RequestBody UpdateMediaEntityRequest updateMediaEntityRequest
     ) {
         String userId = (String) request.getAttribute("id");
         return this.postService.update(updateMediaEntityRequest, userId);
     }
 
     @DeleteMapping("{id}")
-    public void deleteComment(
+    public void delete(
             HttpServletRequest request,
             @PathVariable("id") String id
     ) {

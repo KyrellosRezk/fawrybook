@@ -59,19 +59,19 @@ public class JWTUtil {
         log.info("RSA keys loaded successfully from");
     }
 
-    public String generateAccessToken(String userId, String username) {
-        return generateToken(userId, getAccessTokenValidity(), TokenTypeEnum.ACCESS, username);
+    public String generateAccessToken(String userId, String username, String email) {
+        return generateToken(userId, getAccessTokenValidity(), TokenTypeEnum.ACCESS, username, email);
     }
 
-    public String generateRefreshToken(String userId, String username) {
-        return generateToken(userId, getRefreshTokenValidity(), TokenTypeEnum.REFRESH, username);
+    public String generateRefreshToken(String userId, String username, String email) {
+        return generateToken(userId, getRefreshTokenValidity(), TokenTypeEnum.REFRESH, username, email);
     }
 
-    public String generateOTPToken(String email, String username) {
-        return generateToken(email, getOTPTokenValidity(), TokenTypeEnum.OTP, username);
+    public String generateOTPToken(String userId, String username, String email) {
+        return generateToken(userId, getOTPTokenValidity(), TokenTypeEnum.OTP, username, email);
     }
 
-    private String generateToken(String subject, Duration validity, TokenTypeEnum type, String username) {
+    private String generateToken(String subject, Duration validity, TokenTypeEnum type, String username, String email) {
         Instant now = Instant.now();
         Instant expiry = now.plus(validity);
 
@@ -81,6 +81,7 @@ public class JWTUtil {
                 .setExpiration(Date.from(expiry))
                 .claim("type", type.name())
                 .claim("username", username)
+                .claim("email", email)
                 .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }

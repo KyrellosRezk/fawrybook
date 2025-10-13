@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { Auth } from './auth/auth';
-import { SignInResponse } from './auth/payloads/responses/sign-in-response';
+import { SignInResponse } from './payloads/responses/sign-in-response';
 
 @Component({
   selector: 'app-root',

@@ -29,6 +29,7 @@ public class ReactEntity {
     private PostEntity post;
 
     @Column(name = "TYPE", nullable = false, length = 255)
+    @Enumerated(EnumType.STRING)
     private ReactTypeEnum type;
 
     public ReactEntity(CreateReactRequest createReactRequest, String userId) {

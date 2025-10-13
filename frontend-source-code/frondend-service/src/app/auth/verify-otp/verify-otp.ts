@@ -4,8 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth } from '../auth';
 import { HttpHeaders } from '@angular/common/http';
-import { VerifyOtpRequest } from '../payloads/requests/verify-otp-request';
-import { OTPResponse } from '../payloads/responses/otp.response';
+import { VerifyOtpRequest } from '../../payloads/requests/verify-otp-request';
 
 @Component({
   selector: 'app-verify-otp',
@@ -51,7 +50,7 @@ export class VerifyOtp {
     this.auth.verifyOtp(verifyOtpRequest).subscribe({
       next: () => {
         window.alert('OTP verified successfully!');
-        this.router.navigate(['/home']);
+        this.router.navigate(['/signin']);
       },
       error: err => {
         const message = err.error?.message?.toLowerCase() || '';

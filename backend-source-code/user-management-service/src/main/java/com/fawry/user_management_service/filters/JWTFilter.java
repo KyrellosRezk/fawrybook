@@ -104,7 +104,7 @@ public class JWTFilter extends OncePerRequestFilter {
             if(!claims.getBody().get("type").equals(TokenTypeEnum.OTP.toString())) {
                 throw new UnAuthorizedException("Invalid token type");
             }
-            request.setAttribute("email", claims.getBody().getSubject());
+            request.setAttribute("email", claims.getBody().get("email"));
         }
         filterChain.doFilter(request, response);
     }

@@ -51,9 +51,11 @@ public class CommentEntity {
     public CommentEntity(CreateCommentRequest createCommentRequest, String userId) {
         this.userId = userId;
         this.post = PostEntity.builder().id(createCommentRequest.postId()).build();
-        this.hasMedia = createCommentRequest.hasMedia();
+        this.hasMedia = false;
+        //this.hasMedia = createCommentRequest.hasMedia();
         this.content = createCommentRequest.content();
-        this.parentComment = createCommentRequest.parentCommentId() != null ?
-            CommentEntity.builder().id(createCommentRequest.parentCommentId()).build() : null;
+        this.parentComment = null;
+        //this.parentComment = createCommentRequest.parentCommentId() != null ?
+        //    CommentEntity.builder().id(createCommentRequest.parentCommentId()).build() : null;
     }
 }

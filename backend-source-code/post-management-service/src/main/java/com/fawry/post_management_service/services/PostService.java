@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -54,28 +55,29 @@ public class PostService {
         postEntity.get().setUpdatedAt(Instant.now());
         return CreateMediaEntityResponse.map(
                 this.postRepository.save(postEntity.get()).getId(),
-                updateMediaEntityRequest.hasMedia() ? EntityNameEnum.POST : null
+                postEntity.get().getHasMedia() ? EntityNameEnum.POST : null
         );
     }
 
+    @Transactional
     public void delete(String id, String userId) {
         this.postRepository.deleteByIdAndUserId(id, userId);
     }
 
-    public Page<PostPagination> getFeed(
-            String userId,
-            @NotNull PaginationRequest paginationRequest
-    ) {
+    public Page<PostPagination> getFeed(String userId, @NotNull PaginationRequest paginationRequest) {
         Pageable pageable = PageRequest.of(
                 paginationRequest.page() == null ? 0 : paginationRequest.page(),
                 paginationRequest.size() == null ? 5 : paginationRequest.size()
         );
 
-        Page<Object[]> result = postRepository.findFeedWithCounts(
-                userId,
-                paginationRequest.filterUserId(),
-                pageable
-        );
+        Page<Object[]> result;
+
+        if (paginationRequest.filterUserId() != null && !paginationRequest.filterUserId().isEmpty()) {
+            result = postRepository.findPostsByUserId(paginationRequest.filterUserId(), pageable);
+        }
+        else {
+            result = postRepository.findFeedForUser(userId, pageable);
+        }
 
         return result.map(row -> {
             try {

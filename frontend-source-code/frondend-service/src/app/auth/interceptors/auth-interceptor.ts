@@ -17,7 +17,12 @@ export class AuthInterceptor implements HttpInterceptor {
     '/user-management/api/v1/request/action',
     '/user-management/api/v1/user/suggestions',
     '/user-management/api/v1/user/id',
-    '/post-management/api/v1/post/pagination'
+    '/post-management/api/v1/post/pagination',
+    '/post-management/api/v1/post',
+    '/post-management/api/v1/react',
+    '/post-management/api/v1/comment',
+    '/file-management/api/v1/file',
+    '/file-management/api/v1/file/files'
   ];
 
   constructor(private auth: Auth, private router: Router) {}

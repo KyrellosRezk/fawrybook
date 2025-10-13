@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -80,15 +81,31 @@ WHERE u.status = 'ACTIVE'
             @Param("followedId") String followedId
     );
 
-    @Query("""
-        SELECT new com.fawry.user_management_service.payloads.responses.UserBasicDataResponse(
-            u.id, u.email, u.firstName, u.middleName, u.lastName, null
-        )
-        FROM UserEntity u
-        JOIN u.receivedFollowRequests rfr
-        WHERE rfr.id = :id
-    """)
+    @Query(
+            value = """
+        SELECT 
+            u.id AS id,
+            u.email AS email,
+            u.first_name AS firstName,
+            u.middle_name AS middleName,
+            u.last_name AS lastName,
+            NULL AS logoPath
+        FROM user_management.user u
+        JOIN user_management.following_request fr
+          ON u.id = fr.sender_id
+        WHERE fr.receiver_id = :id
+        """,
+            countQuery = """
+        SELECT COUNT(*)
+        FROM user_management.user u
+        JOIN user_management.following_request fr
+          ON u.id = fr.sender_id
+        WHERE fr.receiver_id = :id
+        """,
+            nativeQuery = true
+    )
     Page<UserBasicDataResponse> findRequests(@Param("id") String id, Pageable pageable);
+
 
     @Query(nativeQuery = true, value = """
         SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
@@ -98,30 +115,33 @@ WHERE u.status = 'ACTIVE'
     Boolean existsFollowRequest(@Param("receiverId") String receiverId,
                                         @Param("senderId") String senderId);
 
+    @Transactional
     @Modifying
     @Query(nativeQuery = true, value = """
         DELETE FROM user_management.FOLLOWING_REQUEST
         WHERE SENDER_ID = :senderId AND RECEIVER_ID = :receiverId
     """)
-    void deleteFollowRequest(@Param("senderId") String senderId,
+    int deleteFollowRequest(@Param("senderId") String senderId,
                              @Param("receiverId") String receiverId);
 
+    @Transactional
     @Modifying
     @Query(nativeQuery = true, value = """
-        INSERT INTO user_management.FOLLOWING_REQUEST(SENDER_ID, RECEIVER_ID)
-        VALUES (:senderId, :receiverId)
-        ON CONFLICT DO NOTHING
-    """)
-    void insertFollowRequest(@Param("senderId") String senderId,
-                         @Param("receiverId") String receiverId);
+    INSERT INTO user_management.FOLLOWING_REQUEST(SENDER_ID, RECEIVER_ID)
+    VALUES (:senderId, :receiverId)
+    ON CONFLICT DO NOTHING
+""")
+    int insertFollowRequest(@Param("senderId") String senderId,
+                            @Param("receiverId") String receiverId);
 
+    @Transactional
     @Modifying
     @Query(nativeQuery = true, value = """
         INSERT INTO user_management.FOLLOWING(FOLLOWER_ID, FOLLOWED_ID)
         VALUES (:followerId, :followedId)
         ON CONFLICT DO NOTHING
     """)
-    void insertFollowing(@Param("followerId") String followerId,
+    int insertFollowing(@Param("followerId") String followerId,
                          @Param("followedId") String followedId);
 }
 
