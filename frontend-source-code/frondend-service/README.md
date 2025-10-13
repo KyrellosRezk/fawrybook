@@ -1,59 +1,127 @@
-# FrondendService
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.5.
+# 🖥️ FawryBook Frontend Service
 
-## Development server
+## 📘 Overview
+This project is the **frontend service** for the FawryBook social application — built using **Angular 17**, **Tailwind CSS**, and **Angular Material**.  
+It connects to the backend microservices (`user-management-service`, `post-management-service`, etc.) and provides a modern, responsive, and real-time user experience.
 
-To start a local development server, run:
+---
 
+## 🚀 Features
+- 🧑‍🤝‍🧑 User Authentication & Profiles  
+- 📝 Post creation, editing, and deletion  
+- 💬 Comments and reactions (like/dislike)  
+- 👥 Friend requests (approve/decline)  
+- 🖼️ Media upload and preview  
+- 🔄 Dynamic content loading with pagination  
+- 🌙 Dark UI with Tailwind CSS  
+
+---
+
+## 🏗️ Project Structure
+```
+frontend-service/
+│
+├── src/
+│   ├── app/
+│   │   ├── auth/               # Authentication components
+│   │   ├── feed/               # Main feed with posts and reactions
+│   │   ├── profile/            # User profile pages
+│   │   ├── services/           # HttpClient-based services (Post, Comment, File, etc.)
+│   │   ├── payloads/           # DTOs and response/requests models
+│   │   └── shared/             # Shared UI components
+│   ├── assets/                 # Static images and icons
+│   └── environments/           # Environment config files
+│
+├── tailwind.config.js
+├── package.json
+├── angular.json
+└── README.md
+```
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1️⃣ Prerequisites
+Ensure you have the following installed:
+- [Node.js 18+](https://nodejs.org/)
+- [Angular CLI 17+](https://angular.io/cli)
+- npm or yarn package manager
+
+### 2️⃣ Installation
+```bash
+git clone https://github.com/your-org/frontend-service.git
+cd frontend-service
+npm install
+```
+
+### 3️⃣ Development Server
+Start the local Angular server:
 ```bash
 ng serve
 ```
+Visit the app at 👉 [http://localhost:4200](http://localhost:4200)
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+### 4️⃣ Build for Production
 ```bash
-ng generate component component-name
+ng build --configuration production
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
+### 5️⃣ Environment Configuration
+Update the backend API URLs in `src/environments/environment.ts`:
+```ts
+export const environment = {
+  production: false,
+  apiUrls: {
+    user: 'http://localhost:8080/user-management/api/v1',
+    post: 'http://localhost:8081/post-management/api/v1'
+  }
+};
 ```
 
-## Building
+---
 
-To build the project run:
+## 🧩 Available Angular Services
 
-```bash
-ng build
-```
+| Service | Description |
+|----------|-------------|
+| **PostService** | Handles post creation, editing, deletion, and pagination |
+| **CommentService** | Manages comments creation and fetching |
+| **FileService** | Handles file uploads and downloads |
+| **AuthService** | Manages JWT login, signup, and token refresh |
+| **FriendService** | Manages friend requests and relationships |
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+## 🧪 Running Tests
 ```bash
 ng test
 ```
+This command launches the Karma test runner for unit tests.
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## 🧰 Technologies Used
+- Angular 17
+- Tailwind CSS
+- Angular Material
+- RxJS
+- TypeScript
+- Lucide Icons
 
-```bash
-ng e2e
-```
+---
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🧑‍💻 Developer Notes
+- Use `ChangeDetectorRef.markForCheck()` when updating UI after async operations.  
+- Always handle API errors gracefully with user-friendly alerts.  
+- Store tokens securely in localStorage or sessionStorage.
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 📄 License
+This project is licensed under the **MIT License**.
+
+---
+
+© 2025 FawryBook Team. All rights reserved.
