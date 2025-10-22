@@ -25,7 +25,7 @@ public class OTPUtil {
     public static boolean validateOtp(String otp, String email){
         String storedOtp = RedisUtils.getKeyJsonValue(OTP_TABLE, email);
         if (storedOtp != null && storedOtp.equals(otp)) {
-            RedisUtils.deleteJsonValue(OTP_TABLE, email);
+            RedisUtils.deleteKeyJsonValue(OTP_TABLE, email);
             return true;
         }
         return false;

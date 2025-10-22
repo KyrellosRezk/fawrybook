@@ -46,6 +46,11 @@ public class RedisUtils {
         hashOps.delete(tableName, key);
     }
 
+    public static void deleteKeyJsonValue(String tableName, String key) {
+        String redisKey = tableName + ":" + key;
+        staticTemplate.delete(redisKey);
+    }
+
     public static void setExpire(String tableName, String key, long timeout, TimeUnit unit) {
         String redisKey = tableName + ":" + key;
         staticTemplate.expire(redisKey, timeout, unit);
